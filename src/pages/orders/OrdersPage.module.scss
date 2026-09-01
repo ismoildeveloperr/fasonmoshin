@@ -1,0 +1,180 @@
+.orders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order {
+  display: grid;
+  grid-template-columns:
+    1.1fr
+    1.4fr
+    1fr
+    1fr;
+
+  align-items: center;
+  gap: 20px;
+
+  padding: 22px;
+
+  background: var(--color-background-primary);
+
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 16px 40px rgb(0 0 0 / 5%);
+  }
+}
+
+.orderMain {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      color: var(--color-text-secondary);
+      font-size: 10px;
+    }
+
+    strong {
+      font-size: 14px;
+    }
+  }
+}
+
+.orderIcon {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  background: #111;
+
+  border-radius: 13px;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  span {
+    color: var(--color-text-secondary);
+
+    font-size: 10px;
+  }
+
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 12px;
+    font-weight: 650;
+  }
+}
+
+.empty {
+  min-height: 500px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+
+  background: var(--color-background-primary);
+
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+
+  text-align: center;
+
+  h2 {
+    margin-top: 20px;
+
+    font-size: 25px;
+  }
+
+  p {
+    max-width: 400px;
+
+    margin-top: 8px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  > a {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 22px;
+    padding: 0 18px;
+
+    color: #fff;
+    background: #111;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.emptyIcon {
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--color-background-secondary);
+
+  border-radius: 20px;
+}
+
+.error {
+  padding: 24px;
+
+  color: #c43535;
+  background: #fff4f4;
+
+  border-radius: 15px;
+}
+
+@media (max-width: 1000px) {
+  .order {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .order {
+    grid-template-columns: 1fr;
+  }
+}

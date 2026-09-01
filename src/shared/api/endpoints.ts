@@ -1,0 +1,16 @@
+export const API_ENDPOINTS = {
+  products: "/products",
+  categories: "/categories",
+  brands: "/brands",
+  cart: "/cart",
+  favorites: "/favorites",
+  users: "/users",
+  orders: "/orders",
+  orderItems: "/orderItems",
+  reviews: "/reviews",
+  promocodes: "/promocodes",
+  discounts: "/discounts",
+  deliveryMethods: "/deliveryMethods",
+  addresses: "/addresses",
+  banners: "/banners",
+} as const;
