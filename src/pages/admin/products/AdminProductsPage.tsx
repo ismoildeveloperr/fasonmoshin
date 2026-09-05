@@ -10,6 +10,7 @@ import { AdminProductFormModal } from "@/features/admin-product-form";
 import { AdminLayout } from "@/widgets/AdminLayout";
 
 import styles from "./AdminProductsPage.module.scss";
+import { getPublicImageUrl } from "@/shared/lib";
 
 export const AdminProductsPage = () => {
   const { data: products = [], isLoading, isError } = useProductsQuery();
@@ -150,7 +151,10 @@ export const AdminProductsPage = () => {
                     <div className={styles.product}>
                       <div className={styles.image}>
                         {product.images?.[0] ? (
-                          <img src={product.images[0]} alt={product.name} />
+                          <img
+                            src={getPublicImageUrl(product.images?.[0])}
+                            alt={product.name}
+                          />
                         ) : (
                           <Package size={20} />
                         )}

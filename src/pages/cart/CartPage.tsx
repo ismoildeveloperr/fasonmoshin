@@ -8,6 +8,7 @@ import { getAuthUser } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 
 import styles from "./CartPage.module.scss";
+import { getPublicImageUrl } from "@/shared/lib";
 
 type CartProductItem = {
   id: string | number;
@@ -15,11 +16,16 @@ type CartProductItem = {
   product: Product;
 };
 
-const formatPrice = (value: number) => new Intl.NumberFormat("ru-RU").format(value);
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat("ru-RU").format(value);
 
 export const CartPage = () => {
   const currentUser = getAuthUser();
-  const { data: cart = [], isLoading: cartLoading, isError: cartError } = useCartQuery();
+  const {
+    data: cart = [],
+    isLoading: cartLoading,
+    isError: cartError,
+  } = useCartQuery();
   const {
     data: products = [],
     isLoading: productsLoading,
@@ -43,7 +49,10 @@ export const CartPage = () => {
     })
     .filter((item): item is CartProductItem => item !== null);
 
-  const totalQuantity = cartProducts.reduce((total, item) => total + item.quantity, 0);
+  const totalQuantity = cartProducts.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
   const totalPrice = cartProducts.reduce(
     (total, item) => total + Number(item.product.price) * item.quantity,
     0,
@@ -92,7 +101,10 @@ export const CartPage = () => {
                   <article key={id} className={styles.productCard}>
                     <div className={styles.imageContainer}>
                       {product.images?.[0] ? (
-                        <img src={product.images[0]} alt={product.name} />
+                        <img
+                          src={getPublicImageUrl(product.images?.[0])}
+                          alt={product.name}
+                        />
                       ) : (
                         <div className={styles.imagePlaceholder}>
                           <ShoppingBag size={28} />
@@ -101,20 +113,31 @@ export const CartPage = () => {
                     </div>
 
                     <div className={styles.productInfo}>
-                      <span className={styles.article}>Артикул: {product.article}</span>
+                      <span className={styles.article}>
+                        Артикул: {product.article}
+                      </span>
                       <Link to={`/product/${product.id}`}>{product.name}</Link>
-                      <span className={product.stock > 0 ? styles.inStock : styles.outOfStock}>
+                      <span
+                        className={
+                          product.stock > 0 ? styles.inStock : styles.outOfStock
+                        }
+                      >
                         {product.stock > 0 ? "В наличии" : "Нет в наличии"}
                       </span>
                     </div>
 
-                    <div className={styles.quantity} aria-label="Количество товара">
+                    <div
+                      className={styles.quantity}
+                      aria-label="Количество товара"
+                    >
                       <span>{quantity}</span>
                     </div>
 
                     <div className={styles.price}>
                       <strong>{formatPrice(itemTotal)} TJS</strong>
-                      {product.oldPrice && <span>{formatPrice(Number(product.oldPrice))} TJS</span>}
+                      {product.oldPrice && (
+                        <span>{formatPrice(Number(product.oldPrice))} TJS</span>
+                      )}
                     </div>
                   </article>
                 );

@@ -40,6 +40,7 @@ import type { User } from "@/entities/user";
 import { AdminLayout } from "@/widgets/AdminLayout";
 
 import styles from "./AdminDashboardPage.module.scss";
+import { getPublicImageUrl } from "@/shared/lib";
 
 type TopProduct = {
   productId: string | number;
@@ -623,7 +624,10 @@ export const AdminDashboardPage = () => {
                 <div key={product.id} className={styles.stockItem}>
                   <div className={styles.productImage}>
                     {product.images?.[0] ? (
-                      <img src={product.images[0]} alt={product.name} />
+                      <img
+                        src={getPublicImageUrl(product.images?.[0])}
+                        alt={product.name}
+                      />
                     ) : (
                       <Package size={18} />
                     )}

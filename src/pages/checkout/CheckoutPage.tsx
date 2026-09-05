@@ -21,6 +21,7 @@ import { ROUTES } from "@/shared/constants/routes";
 import { Loader } from "@/shared/ui/Loader";
 
 import styles from "./CheckoutPage.module.scss";
+import { getPublicImageUrl } from "@/shared/lib";
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -456,7 +457,10 @@ export const CheckoutPage = () => {
                 <div key={cartItem.id} className={styles.product}>
                   <div className={styles.productImage}>
                     {product.images?.[0] ? (
-                      <img src={product.images[0]} alt={product.name} />
+                      <img
+                        src={getPublicImageUrl(product.images?.[0])}
+                        alt={product.name}
+                      />
                     ) : (
                       <Package size={20} />
                     )}
