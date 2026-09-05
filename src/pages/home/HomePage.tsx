@@ -20,7 +20,7 @@ const BENEFITS = [
   {
     icon: Truck,
     title: "Быстрая доставка",
-    description: "Доставим заказ быстро и аккуратно",
+    description: "Доставим ваш заказ быстро и аккуратно",
   },
   {
     icon: BadgeCheck,
@@ -34,8 +34,8 @@ const BENEFITS = [
   },
   {
     icon: PackageCheck,
-    title: "Товар в наличии",
-    description: "Актуальные остатки и быстрый заказ",
+    title: "Товары в наличии",
+    description: "Актуальные остатки и быстрое оформление заказа",
   },
 ];
 
@@ -89,7 +89,7 @@ export const HomePage = () => {
             </div>
 
             <h1>
-              Сделай свой автомобиль
+              Сделайте свой автомобиль
               <span> удобнее и стильнее</span>
             </h1>
 
@@ -137,17 +137,17 @@ export const HomePage = () => {
               <span className={styles.heroCardLabel}>FASONMOSHIN</span>
 
               <h2>
-                AUTO
+                ВСЁ
                 <br />
-                ESSENTIALS
+                ДЛЯ АВТО
               </h2>
 
-              <p>Premium accessories</p>
+              <p>Премиальные автоаксессуары</p>
 
               <div className={styles.heroCardBottom}>
                 <span>2026</span>
 
-                <span>DRIVE BETTER</span>
+                <span>ЕЗДИ СТИЛЬНО</span>
               </div>
             </div>
 
@@ -169,7 +169,7 @@ export const HomePage = () => {
             <div>
               <span className={styles.eyebrow}>Категории</span>
 
-              <h2>Найди то, что нужно</h2>
+              <h2>Найдите то, что нужно</h2>
             </div>
 
             <Link to={ROUTES.catalog}>
@@ -244,7 +244,7 @@ export const HomePage = () => {
       <section className={styles.promo}>
         <div className={`container ${styles.promoContainer}`}>
           <div className={styles.promoContent}>
-            <span>LIMITED OFFER</span>
+            <span>СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ</span>
 
             <h2>
               Выгодные предложения
@@ -263,12 +263,10 @@ export const HomePage = () => {
           </div>
 
           <div className={styles.promoDecor}>
-            <span>SALE</span>
+            <span>АКЦИЯ</span>
 
             <strong>
-              UP
-              <br />
-              TO
+              ДО
               <br />
               25%
             </strong>

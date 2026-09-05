@@ -1,14 +1,18 @@
-import { Image, Package, X } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { Image, ImagePlus, Package, Trash2, X } from "lucide-react";
+
+import { useState, type FormEvent } from "react";
 
 import { useBrandsQuery } from "@/entities/brand";
 import { useCategoriesQuery } from "@/entities/category";
+
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from "@/entities/product";
 
 import type { Product } from "@/entities/product";
+
+import { getPublicImageUrl } from "@/shared/lib/getPublicImageUrl";
 
 import styles from "./AdminProductFormModal.module.scss";
 
@@ -31,74 +35,139 @@ export const AdminProductFormModal = ({
 
   const updateProduct = useUpdateProductMutation();
 
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [article, setArticle] = useState("");
-  const [description, setDescription] = useState("");
+  /*
+   * =========================
+   * ОСНОВНАЯ ИНФОРМАЦИЯ
+   * =========================
+   */
 
-  const [price, setPrice] = useState("");
-  const [oldPrice, setOldPrice] = useState("");
+  const [name, setName] = useState(() => product?.name ?? "");
 
-  const [stock, setStock] = useState("");
+  const [slug, setSlug] = useState(() => product?.slug ?? "");
 
-  const [categorySlug, setCategorySlug] = useState("");
+  const [article, setArticle] = useState(() => product?.article ?? "");
 
-  const [brandSlug, setBrandSlug] = useState("");
+  const [description, setDescription] = useState(
+    () => product?.description ?? "",
+  );
 
-  const [imageUrl, setImageUrl] = useState("");
+  /*
+   * =========================
+   * ЦЕНА
+   * =========================
+   */
 
-  const [color, setColor] = useState("");
+  const [price, setPrice] = useState(() =>
+    product?.price !== undefined ? String(product.price) : "",
+  );
 
-  const [isNew, setIsNew] = useState(false);
+  const [oldPrice, setOldPrice] = useState(() =>
+    product?.oldPrice !== undefined ? String(product.oldPrice) : "",
+  );
 
-  const [isSale, setIsSale] = useState(false);
+  const [stock, setStock] = useState(() =>
+    product?.stock !== undefined ? String(product.stock) : "",
+  );
 
-  const [isPopular, setIsPopular] = useState(false);
+  /*
+   * =========================
+   * КАТАЛОГ
+   * =========================
+   */
+
+  const [categorySlug, setCategorySlug] = useState(
+    () => product?.categorySlug ?? "",
+  );
+
+  const [brandSlug, setBrandSlug] = useState(() => product?.brandSlug ?? "");
+
+  const [color, setColor] = useState(() => product?.color ?? "");
+
+  /*
+   * =========================
+   * ФОТО
+   * =========================
+   */
+
+  const [imagePath, setImagePath] = useState(() => product?.images?.[0] ?? "");
+
+  const [imageError, setImageError] = useState(false);
+
+  /*
+   * =========================
+   * СТАТУСЫ
+   * =========================
+   */
+
+  const [isNew, setIsNew] = useState(() => product?.isNew ?? false);
+
+  const [isSale, setIsSale] = useState(() => product?.isSale ?? false);
+
+  const [isPopular, setIsPopular] = useState(() => product?.isPopular ?? false);
 
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!product) {
-      return;
-    }
-
-    setName(product.name);
-    setSlug(product.slug);
-    setArticle(product.article);
-    setDescription(product.description);
-
-    setPrice(String(product.price));
-
-    setOldPrice(product.oldPrice ? String(product.oldPrice) : "");
-
-    setStock(String(product.stock));
-
-    setCategorySlug(product.categorySlug);
-
-    setBrandSlug(product.brandSlug ?? "");
-
-    setImageUrl(product.images?.[0] ?? "");
-
-    setColor(product.color ?? "");
-
-    setIsNew(product.isNew);
-    setIsSale(product.isSale);
-    setIsPopular(product.isPopular);
-  }, [product]);
+  /*
+   * =========================
+   * SLUG
+   * =========================
+   */
 
   const handleNameChange = (value: string) => {
     setName(value);
 
-    if (!isEditing) {
-      const generatedSlug = value
-        .toLowerCase()
-        .trim()
-        .replace(/[^\wа-яё]+/gi, "-")
-        .replace(/^-+|-+$/g, "");
-
-      setSlug(generatedSlug);
+    if (isEditing) {
+      return;
     }
+
+    const generatedSlug = value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-zа-яё0-9]+/gi, "-")
+      .replace(/^-+|-+$/g, "");
+
+    setSlug(generatedSlug);
   };
+
+  /*
+   * =========================
+   * ФОТО
+   * =========================
+   */
+
+  const handleImagePathChange = (value: string) => {
+    let normalizedValue = value.trim();
+
+    /*
+     * Можно написать просто:
+     * product-1.jpg
+     *
+     * Автоматически получим:
+     * /products/product-1.jpg
+     */
+    if (
+      normalizedValue &&
+      !normalizedValue.startsWith("http://") &&
+      !normalizedValue.startsWith("https://") &&
+      !normalizedValue.startsWith("/products/")
+    ) {
+      normalizedValue = `/products/${normalizedValue}`;
+    }
+
+    setImagePath(normalizedValue);
+    setImageError(false);
+  };
+
+  const handleRemoveImage = () => {
+    setImagePath("");
+    setImageError(false);
+  };
+
+  /*
+   * =========================
+   * СОХРАНЕНИЕ
+   * =========================
+   */
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -106,6 +175,7 @@ export const AdminProductFormModal = ({
     setError("");
 
     const numericPrice = Number(price);
+
     const numericStock = Number(stock);
 
     if (!name.trim() || !slug.trim() || !article.trim()) {
@@ -134,14 +204,34 @@ export const AdminProductFormModal = ({
 
     const numericOldPrice = oldPrice ? Number(oldPrice) : undefined;
 
+    if (
+      numericOldPrice !== undefined &&
+      (Number.isNaN(numericOldPrice) || numericOldPrice < 0)
+    ) {
+      setError("Укажите корректную старую цену.");
+
+      return;
+    }
+
     const discount =
       numericOldPrice && numericOldPrice > numericPrice
         ? Math.round(((numericOldPrice - numericPrice) / numericOldPrice) * 100)
         : undefined;
 
+    /*
+     * В Mokky сохраняем:
+     *
+     * /products/product-1.jpg
+     *
+     * а НЕ полный адрес localhost.
+     */
+    const normalizedImagePath = imagePath.trim();
+
     const payload = {
       name: name.trim(),
+
       slug: slug.trim(),
+
       article: article.trim(),
 
       description: description.trim(),
@@ -156,7 +246,7 @@ export const AdminProductFormModal = ({
 
       brandSlug: brandSlug || undefined,
 
-      images: imageUrl.trim() ? [imageUrl.trim()] : [],
+      images: normalizedImagePath ? [normalizedImagePath] : [],
 
       rating: product?.rating ?? 0,
 
@@ -169,7 +259,9 @@ export const AdminProductFormModal = ({
       compatibility: product?.compatibility ?? [],
 
       isNew,
+
       isSale,
+
       isPopular,
 
       createdAt: product?.createdAt ?? new Date().toISOString(),
@@ -186,12 +278,16 @@ export const AdminProductFormModal = ({
       }
 
       onClose();
-    } catch {
+    } catch (error) {
+      console.error(error);
+
       setError("Не удалось сохранить товар.");
     }
   };
 
   const isPending = createProduct.isPending || updateProduct.isPending;
+
+  const imagePreviewUrl = imagePath ? getPublicImageUrl(imagePath) : "";
 
   return (
     <div className={styles.overlay}>
@@ -203,6 +299,8 @@ export const AdminProductFormModal = ({
       />
 
       <div className={styles.modal} role="dialog" aria-modal="true">
+        {/* HEADER */}
+
         <div className={styles.header}>
           <div>
             <span>{isEditing ? "Редактирование" : "Новый товар"}</span>
@@ -210,12 +308,16 @@ export const AdminProductFormModal = ({
             <h2>{isEditing ? "Редактировать товар" : "Добавить товар"}</h2>
           </div>
 
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={onClose} aria-label="Закрыть">
             <X size={20} />
           </button>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
+          {/* =====================
+              ОСНОВНАЯ ИНФОРМАЦИЯ
+          ===================== */}
+
           <section>
             <div className={styles.sectionTitle}>
               <Package size={18} />
@@ -273,6 +375,10 @@ export const AdminProductFormModal = ({
               </label>
             </div>
           </section>
+
+          {/* =====================
+              ЦЕНА И КАТАЛОГ
+          ===================== */}
 
           <section>
             <div className={styles.sectionTitle}>
@@ -368,18 +474,89 @@ export const AdminProductFormModal = ({
                   ))}
                 </select>
               </label>
-
-              <label className={styles.full}>
-                <span>URL изображения</span>
-
-                <input
-                  value={imageUrl}
-                  onChange={(event) => setImageUrl(event.target.value)}
-                  placeholder="https://..."
-                />
-              </label>
             </div>
           </section>
+
+          {/* =====================
+              ИЗОБРАЖЕНИЕ
+          ===================== */}
+
+          <section>
+            <div className={styles.sectionTitle}>
+              <ImagePlus size={18} />
+
+              <div>
+                <strong>Изображение товара</strong>
+
+                <span>Файл из public/products</span>
+              </div>
+            </div>
+
+            <div className={styles.imageSection}>
+              <label className={styles.imagePathField}>
+                <span>Имя файла</span>
+
+                <input
+                  type="text"
+                  value={imagePath}
+                  onChange={(event) =>
+                    handleImagePathChange(event.target.value)
+                  }
+                  placeholder="product-1.jpg"
+                />
+
+                <small>
+                  Например: product-1.jpg или /products/product-1.jpg
+                </small>
+              </label>
+
+              {imagePreviewUrl && !imageError && (
+                <div className={styles.imagePreview}>
+                  <div className={styles.previewImage}>
+                    <img
+                      src={imagePreviewUrl}
+                      alt={name || "Изображение товара"}
+                      onLoad={() => setImageError(false)}
+                      onError={() => setImageError(true)}
+                    />
+                  </div>
+
+                  <div className={styles.previewInfo}>
+                    <div>
+                      <strong>Изображение найдено</strong>
+
+                      <span>{imagePath}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className={styles.removeImage}
+                      onClick={handleRemoveImage}
+                    >
+                      <Trash2 size={16} />
+                      Удалить
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {imagePath && imageError && (
+                <div className={styles.imageNotFound}>
+                  <ImagePlus size={22} />
+
+                  <div>
+                    <strong>Изображение не найдено</strong>
+
+                    <span>Проверь, что файл находится в public/products</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* =====================
+              СТАТУСЫ
+          ===================== */}
 
           <section>
             <div className={styles.flags}>
@@ -418,7 +595,12 @@ export const AdminProductFormModal = ({
           {error && <div className={styles.error}>{error}</div>}
 
           <div className={styles.actions}>
-            <button type="button" className={styles.cancel} onClick={onClose}>
+            <button
+              type="button"
+              className={styles.cancel}
+              onClick={onClose}
+              disabled={isPending}
+            >
               Отмена
             </button>
 

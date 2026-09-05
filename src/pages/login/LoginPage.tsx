@@ -1,8 +1,11 @@
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+
 import { useState, type FormEvent } from "react";
+
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import { getAuthUser, login, saveAuthUser } from "@/features/auth";
+
 import { ROUTES } from "@/shared/constants/routes";
 
 import styles from "./LoginPage.module.scss";
@@ -12,17 +15,31 @@ export const LoginPage = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = getAuthUser();
 
+  /**
+   * Если пользователь уже авторизован,
+   * отправляем его на страницу по роли.
+   */
   if (currentUser) {
-    return <Navigate to={ROUTES.profile} replace />;
+    return (
+      <Navigate
+        to={currentUser.role === "admin" ? ROUTES.admin : ROUTES.profile}
+        replace
+      />
+    );
   }
 
+  /**
+   * Авторизация пользователя.
+   */
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -35,9 +52,30 @@ export const LoginPage = () => {
         password,
       });
 
+      /**
+       * Сохраняем авторизованного пользователя.
+       */
       saveAuthUser(user);
 
-      navigate(ROUTES.profile);
+      /**
+       * Администратор сразу переходит
+       * в админ-панель.
+       */
+      if (user.role === "admin") {
+        navigate(ROUTES.admin, {
+          replace: true,
+        });
+
+        return;
+      }
+
+      /**
+       * Обычный пользователь переходит
+       * в личный кабинет.
+       */
+      navigate(ROUTES.profile, {
+        replace: true,
+      });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -52,6 +90,7 @@ export const LoginPage = () => {
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
+        {/* Левая визуальная часть */}
         <section className={styles.visual}>
           <div>
             <span>FASONMOSHIN</span>
@@ -68,9 +107,10 @@ export const LoginPage = () => {
             </p>
           </div>
 
-          <strong>DRIVE BETTER.</strong>
+          <strong>ЕЗДИ СТИЛЬНО.</strong>
         </section>
 
+        {/* Форма авторизации */}
         <section className={styles.content}>
           <div className={styles.formContainer}>
             <span className={styles.eyebrow}>ЛИЧНЫЙ КАБИНЕТ</span>
@@ -80,6 +120,7 @@ export const LoginPage = () => {
             <p className={styles.subtitle}>Введите данные вашего аккаунта.</p>
 
             <form className={styles.form} onSubmit={handleSubmit}>
+              {/* Email */}
               <label>
                 <span>Email</span>
 
@@ -91,11 +132,13 @@ export const LoginPage = () => {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="example@mail.com"
+                    autoComplete="email"
                     required
                   />
                 </div>
               </label>
 
+              {/* Password */}
               <label>
                 <span>Пароль</span>
 
@@ -107,21 +150,26 @@ export const LoginPage = () => {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder="Введите пароль"
+                    autoComplete="current-password"
                     required
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowPassword((value) => !value)}
-                    aria-label="Показать пароль"
+                    aria-label={
+                      showPassword ? "Скрыть пароль" : "Показать пароль"
+                    }
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </label>
 
+              {/* Error */}
               {error && <div className={styles.error}>{error}</div>}
 
+              {/* Submit */}
               <button
                 type="submit"
                 className={styles.submit}
@@ -136,7 +184,7 @@ export const LoginPage = () => {
             <div className={styles.bottom}>
               <span>Нет аккаунта?</span>
 
-              <Link to="/register">Зарегистрироваться</Link>
+              <Link to={ROUTES.register}>Зарегистрироваться</Link>
             </div>
           </div>
         </section>

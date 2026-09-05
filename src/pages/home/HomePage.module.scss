@@ -111,9 +111,25 @@
 }
 
 .primaryButton {
-  color: var(--color-text-on-light);
+  color: #111719;
+  background: #ffffff;
 
-  background: var(--color-background-primary);
+  transition:
+          color var(--transition-fast),
+          background var(--transition-fast),
+          transform var(--transition-fast),
+          box-shadow var(--transition-fast);
+
+  &:hover {
+    color: #ffffff;
+    background: var(--color-accent);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 12px 30px
+            rgb(213 31 38 / 25%);
+  }
 }
 
 .secondaryButton {

@@ -1,8 +1,9 @@
 import { useLocation } from "react-router-dom";
 
+import { AppRouter } from "@/app/router";
+import { ScrollToTop } from "@/shared/lib/ScrollToTop";
 import { Footer } from "@/widgets/Footer";
 import { Header } from "@/widgets/Header";
-import { AppRouter } from "@/app/router";
 
 export const App = () => {
   const location = useLocation();
@@ -11,6 +12,8 @@ export const App = () => {
 
   return (
     <>
+      <ScrollToTop />
+
       {!isAdminPage && <Header />}
 
       <AppRouter />
