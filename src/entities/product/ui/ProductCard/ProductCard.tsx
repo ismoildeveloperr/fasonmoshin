@@ -6,6 +6,8 @@ import { AddToCartButton } from "@/features/add-to-cart";
 import { ProductQuickViewModal } from "@/features/product-quick-view";
 import { FavoriteButton } from "@/features/toggle-favorite";
 
+import { getPublicImageUrl } from "@/shared/lib/getPublicImageUrl";
+
 import type { Product } from "../../model/types";
 
 import styles from "./ProductCard.module.scss";
@@ -17,7 +19,24 @@ type ProductCardProps = {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
-  const image = product.images?.[0];
+  /**
+   * Получаем путь из API.
+   *
+   * Например:
+   * /products/product1.jpg
+   */
+  const imagePath = product.images?.[0];
+
+  /**
+   * Превращаем его в правильный URL.
+   *
+   * Локально:
+   * /products/product1.jpg
+   *
+   * GitHub Pages:
+   * /fasonmoshin/products/product1.jpg
+   */
+  const imageUrl = imagePath ? getPublicImageUrl(imagePath) : "";
 
   const discountPercent =
     product.discount ??
@@ -44,9 +63,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             className={styles.imageLink}
             onClick={handleOpenQuickView}
           >
-            {image ? (
+            {imageUrl ? (
               <img
-                src={image}
+                src={imageUrl}
                 alt={product.name}
                 className={styles.image}
                 loading="lazy"
