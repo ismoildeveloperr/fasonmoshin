@@ -59,7 +59,7 @@ export const HomePage = () => {
     return (
       <main className={styles.page}>
         <div className="container">
-          <Loader />
+          <Loader text="Загружаем товары..." />
         </div>
       </main>
     );

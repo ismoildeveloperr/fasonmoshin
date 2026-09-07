@@ -69,7 +69,7 @@ export const CheckoutPage = () => {
     return (
       <main className={styles.page}>
         <div className="container">
-          <Loader />
+          <Loader text="Подготавливаем оформление заказа..." />
         </div>
       </main>
     );

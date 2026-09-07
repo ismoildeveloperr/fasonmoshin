@@ -99,7 +99,7 @@ export const AddressesPage = () => {
       </div>
 
       {isLoading ? (
-        <Loader />
+        <Loader text="Загружаем адреса..." />
       ) : userAddresses.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>

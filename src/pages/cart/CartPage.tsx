@@ -1,14 +1,31 @@
-import { ArrowRight, PackageOpen, ShoppingBag } from "lucide-react";
+import {
+  ArrowRight,
+  Minus,
+  PackageOpen,
+  Plus,
+  ShoppingBag,
+  Trash2,
+} from "lucide-react";
+
 import { Link, Navigate } from "react-router-dom";
 
-import { useCartQuery } from "@/entities/cart";
+import {
+  useCartQuery,
+  useDeleteCartItemMutation,
+  useUpdateCartItemMutation,
+} from "@/entities/cart";
+
 import { useProductsQuery } from "@/entities/product";
+
 import type { Product } from "@/entities/product";
+
 import { getAuthUser } from "@/features/auth";
+
 import { ROUTES } from "@/shared/constants/routes";
 
-import styles from "./CartPage.module.scss";
 import { getPublicImageUrl } from "@/shared/lib";
+
+import styles from "./CartPage.module.scss";
 
 type CartProductItem = {
   id: string | number;
@@ -21,16 +38,22 @@ const formatPrice = (value: number) =>
 
 export const CartPage = () => {
   const currentUser = getAuthUser();
+
   const {
     data: cart = [],
     isLoading: cartLoading,
     isError: cartError,
   } = useCartQuery();
+
   const {
     data: products = [],
     isLoading: productsLoading,
     isError: productsError,
   } = useProductsQuery();
+
+  const updateCartItem = useUpdateCartItemMutation();
+
+  const deleteCartItem = useDeleteCartItemMutation();
 
   if (!currentUser) {
     return <Navigate to={ROUTES.login} replace />;
@@ -44,7 +67,11 @@ export const CartPage = () => {
       );
 
       return product
-        ? { id: item.id, quantity: Number(item.quantity || 1), product }
+        ? {
+            id: item.id,
+            quantity: Number(item.quantity || 1),
+            product,
+          }
         : null;
     })
     .filter((item): item is CartProductItem => item !== null);
@@ -53,19 +80,70 @@ export const CartPage = () => {
     (total, item) => total + item.quantity,
     0,
   );
+
   const totalPrice = cartProducts.reduce(
     (total, item) => total + Number(item.product.price) * item.quantity,
     0,
   );
+
   const isLoading = cartLoading || productsLoading;
+
   const isError = cartError || productsError;
+
+  const isPending = updateCartItem.isPending || deleteCartItem.isPending;
+
+  const handleDecrease = (cartItemId: string | number, quantity: number) => {
+    if (isPending) {
+      return;
+    }
+
+    if (quantity <= 1) {
+      deleteCartItem.mutate(cartItemId);
+
+      return;
+    }
+
+    updateCartItem.mutate({
+      id: cartItemId,
+      quantity: quantity - 1,
+    });
+  };
+
+  const handleIncrease = (
+    cartItemId: string | number,
+    quantity: number,
+    stock: number,
+  ) => {
+    if (isPending) {
+      return;
+    }
+
+    if (quantity >= stock) {
+      return;
+    }
+
+    updateCartItem.mutate({
+      id: cartItemId,
+      quantity: quantity + 1,
+    });
+  };
+
+  const handleDelete = (cartItemId: string | number) => {
+    if (isPending) {
+      return;
+    }
+
+    deleteCartItem.mutate(cartItemId);
+  };
 
   return (
     <main className={styles.page}>
       <div className="container">
         <div className={styles.header}>
           <span>Ваш заказ</span>
+
           <h1>Корзина</h1>
+
           <p>{totalQuantity} товаров</p>
         </div>
 
@@ -82,8 +160,11 @@ export const CartPage = () => {
             <div className={styles.emptyIcon}>
               <PackageOpen size={34} />
             </div>
+
             <h2>Корзина пока пустая</h2>
+
             <p>Добавьте товары из каталога, чтобы оформить заказ.</p>
+
             <Link to={ROUTES.catalog}>
               Перейти в каталог
               <ArrowRight size={18} />
@@ -116,13 +197,17 @@ export const CartPage = () => {
                       <span className={styles.article}>
                         Артикул: {product.article}
                       </span>
+
                       <Link to={`/product/${product.id}`}>{product.name}</Link>
+
                       <span
                         className={
                           product.stock > 0 ? styles.inStock : styles.outOfStock
                         }
                       >
-                        {product.stock > 0 ? "В наличии" : "Нет в наличии"}
+                        {product.stock > 0
+                          ? `В наличии: ${product.stock} шт.`
+                          : "Нет в наличии"}
                       </span>
                     </div>
 
@@ -130,15 +215,51 @@ export const CartPage = () => {
                       className={styles.quantity}
                       aria-label="Количество товара"
                     >
+                      <button
+                        type="button"
+                        onClick={() => handleDecrease(id, quantity)}
+                        disabled={isPending}
+                        aria-label="Уменьшить количество"
+                      >
+                        <Minus size={16} />
+                      </button>
+
                       <span>{quantity}</span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleIncrease(id, quantity, Number(product.stock))
+                        }
+                        disabled={
+                          isPending || quantity >= Number(product.stock)
+                        }
+                        aria-label="Увеличить количество"
+                      >
+                        <Plus size={16} />
+                      </button>
                     </div>
 
                     <div className={styles.price}>
                       <strong>{formatPrice(itemTotal)} TJS</strong>
-                      {product.oldPrice && (
-                        <span>{formatPrice(Number(product.oldPrice))} TJS</span>
+
+                      {product.oldPrice && product.oldPrice > product.price && (
+                        <span>
+                          {formatPrice(Number(product.oldPrice) * quantity)} TJS
+                        </span>
                       )}
                     </div>
+
+                    <button
+                      type="button"
+                      className={styles.removeButton}
+                      onClick={() => handleDelete(id)}
+                      disabled={isPending}
+                      aria-label={`Удалить ${product.name}`}
+                      title="Удалить товар"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </article>
                 );
               })}
@@ -146,17 +267,23 @@ export const CartPage = () => {
 
             <aside className={styles.summary}>
               <span className={styles.summaryLabel}>Ваш заказ</span>
+
               <h2>Итого</h2>
+
               <div className={styles.summaryRows}>
                 <div>
                   <span>Товаров</span>
+
                   <strong>{totalQuantity}</strong>
                 </div>
               </div>
+
               <div className={styles.total}>
                 <span>К оплате</span>
+
                 <strong>{formatPrice(totalPrice)} TJS</strong>
               </div>
+
               <Link to={ROUTES.checkout} className={styles.checkoutButton}>
                 Оформить заказ
                 <ArrowRight size={18} />

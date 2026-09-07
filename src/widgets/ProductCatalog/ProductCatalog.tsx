@@ -6,7 +6,7 @@ export const ProductCatalog = () => {
   const { data: products, isLoading, isError, refetch } = useProductsQuery();
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader text="Загружаем каталог..." />;
   }
 
   if (isError) {

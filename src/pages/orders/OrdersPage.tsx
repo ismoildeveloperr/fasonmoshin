@@ -32,7 +32,7 @@ export const OrdersPage = () => {
         title="Мои заказы"
         description="История и состояние ваших заказов."
       >
-        <Loader />
+        <Loader text="Загружаем заказы..." />
       </ProfileLayout>
     );
   }

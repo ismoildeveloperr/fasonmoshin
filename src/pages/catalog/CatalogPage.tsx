@@ -193,7 +193,7 @@ export const CatalogPage = () => {
     return (
       <main className={styles.page}>
         <div className="container">
-          <Loader />
+          <Loader text="Загружаем товары..." />
         </div>
       </main>
     );
