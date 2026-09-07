@@ -6,7 +6,6 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 import type { Product } from "@/entities/product";
 
@@ -149,14 +148,6 @@ export const ProductQuickViewModal = ({
                 className={styles.favoriteButton}
               />
             </div>
-
-            <Link
-              to={`/product/${product.id}`}
-              className={styles.detailsLink}
-              onClick={onClose}
-            >
-              Перейти на страницу товара
-            </Link>
 
             <div className={styles.benefits}>
               <div>
