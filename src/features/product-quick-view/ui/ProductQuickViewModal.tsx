@@ -9,8 +9,11 @@ import {
 import { Link } from "react-router-dom";
 
 import type { Product } from "@/entities/product";
+
 import { AddToCartButton } from "@/features/add-to-cart";
 import { FavoriteButton } from "@/features/toggle-favorite";
+
+import { getPublicImageUrl } from "@/shared/lib/getPublicImageUrl";
 
 import styles from "./ProductQuickViewModal.module.scss";
 
@@ -23,7 +26,9 @@ export const ProductQuickViewModal = ({
   product,
   onClose,
 }: ProductQuickViewModalProps) => {
-  const image = product.images?.[0];
+  const imagePath = product.images?.[0];
+
+  const imageUrl = imagePath ? getPublicImageUrl(imagePath) : "";
 
   const discountPercent =
     product.discount ??
@@ -71,8 +76,8 @@ export const ProductQuickViewModal = ({
               )}
             </div>
 
-            {image ? (
-              <img src={image} alt={product.name} />
+            {imageUrl ? (
+              <img src={imageUrl} alt={product.name} />
             ) : (
               <div className={styles.placeholder}>
                 <Package size={42} />
@@ -159,6 +164,7 @@ export const ProductQuickViewModal = ({
 
                 <div>
                   <strong>Доставка</strong>
+
                   <span>Быстрая доставка по вашему адресу</span>
                 </div>
               </div>
@@ -168,6 +174,7 @@ export const ProductQuickViewModal = ({
 
                 <div>
                   <strong>Гарантия качества</strong>
+
                   <span>Проверенные товары</span>
                 </div>
               </div>
