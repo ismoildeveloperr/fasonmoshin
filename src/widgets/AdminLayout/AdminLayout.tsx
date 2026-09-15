@@ -12,9 +12,10 @@ import {
   Users,
 } from "lucide-react";
 
-import { getAuthUser, removeAuthUser } from "@/features/auth";
+import { useAuth, logout } from "@/features/auth";
 
 import { ROUTES } from "@/shared/constants/routes";
+import { Loader } from "@/shared/ui/Loader";
 
 import styles from "./AdminLayout.module.scss";
 
@@ -62,7 +63,11 @@ export const AdminLayout = ({
   title,
   description,
 }: AdminLayoutProps) => {
-  const currentUser = getAuthUser();
+  const { user: currentUser, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loader text="Проверяем авторизацию..." />;
+  }
 
   if (!currentUser) {
     return <Navigate to={ROUTES.login} replace />;
@@ -72,10 +77,12 @@ export const AdminLayout = ({
     return <Navigate to={ROUTES.home} replace />;
   }
 
-  const handleLogout = () => {
-    removeAuthUser();
-
-    window.location.href = ROUTES.login;
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      window.location.href = ROUTES.login;
+    }
   };
 
   return (

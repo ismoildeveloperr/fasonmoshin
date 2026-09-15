@@ -12,14 +12,14 @@ import { useDeleteUserMutation, useUsersQuery } from "@/entities/user";
 
 import type { User, UserRole } from "@/entities/user";
 
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { AdminUserFormModal } from "@/features/admin-user-form";
 import { AdminLayout } from "@/widgets/AdminLayout";
 
 import styles from "./AdminUsersPage.module.scss";
 
 export const AdminUsersPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: users = [], isLoading, isError } = useUsersQuery();
 

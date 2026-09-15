@@ -6,7 +6,7 @@ import {
   useCartQuery,
   useUpdateCartItemMutation,
 } from "@/entities/cart";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 
 type AddToCartButtonProps = {
@@ -22,7 +22,7 @@ export const AddToCartButton = ({
 }: AddToCartButtonProps) => {
   const navigate = useNavigate();
 
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: cart = [] } = useCartQuery();
 

@@ -1,5 +1,9 @@
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 export const deleteUser = async (id: string | number): Promise<void> => {
-  await apiClient.delete(`${API_ENDPOINTS.users}/${id}`);
+  const { error } = await supabase.rpc("disable_user", {
+    target_user_id: String(id),
+  });
+
+  throwSupabaseError(error);
 };

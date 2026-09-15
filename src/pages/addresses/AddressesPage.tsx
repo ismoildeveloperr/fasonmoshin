@@ -6,14 +6,14 @@ import {
   useAddressesQuery,
   useDeleteAddressMutation,
 } from "@/entities/address";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { Loader } from "@/shared/ui/Loader";
 import { ProfileLayout } from "@/widgets/ProfileLayout";
 
 import styles from "./AddressesPage.module.scss";
 
 export const AddressesPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: addresses = [], isLoading } = useAddressesQuery();
 

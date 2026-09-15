@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 import type { CartItem, UpdateCartItemPayload } from "../model/types";
 
@@ -6,12 +6,19 @@ export const updateCartItem = async ({
   id,
   quantity,
 }: UpdateCartItemPayload): Promise<CartItem> => {
-  const { data } = await apiClient.patch<CartItem>(
-    `${API_ENDPOINTS.cart}/${id}`,
-    {
-      quantity,
-    },
-  );
+  const { data, error } = await supabase
+    .from("cart_items")
+    .update({ quantity })
+    .eq("id", id)
+    .select("*")
+    .single();
 
-  return data;
+  throwSupabaseError(error);
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    productId: data.product_id,
+    quantity: data.quantity,
+  };
 };

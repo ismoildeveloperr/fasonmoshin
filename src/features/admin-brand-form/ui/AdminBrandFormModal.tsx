@@ -1,5 +1,5 @@
 import { Image, Tags, X } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 import {
   useCreateBrandMutation,
@@ -25,21 +25,11 @@ export const AdminBrandFormModal = ({
 
   const updateBrand = useUpdateBrandMutation();
 
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [logo, setLogo] = useState("");
+  const [name, setName] = useState(brand?.name ?? "");
+  const [slug, setSlug] = useState(brand?.slug ?? "");
+  const [logo, setLogo] = useState(brand?.logo ?? "");
 
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!brand) {
-      return;
-    }
-
-    setName(brand.name);
-    setSlug(brand.slug);
-    setLogo(brand.logo ?? "");
-  }, [brand]);
 
   const handleNameChange = (value: string) => {
     setName(value);

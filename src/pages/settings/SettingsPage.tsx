@@ -1,15 +1,13 @@
 import { Bell, Check, Mail, Phone, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-import type { User } from "@/entities/user";
-import { getAuthUser, saveAuthUser } from "@/features/auth";
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { updateAuthUserMetadata, useAuth } from "@/features/auth";
 import { ProfileLayout } from "@/widgets/ProfileLayout";
 
 import styles from "./SettingsPage.module.scss";
 
 export const SettingsPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const [name, setName] = useState(currentUser?.name ?? "");
 
@@ -43,18 +41,13 @@ export const SettingsPage = () => {
     setError("");
 
     try {
-      const { data } = await apiClient.patch<User>(
-        `${API_ENDPOINTS.users}/${currentUser.id}`,
-        {
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          emailNotifications,
-          orderNotifications,
-        },
-      );
-
-      saveAuthUser(data);
+      await updateAuthUserMetadata({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        emailNotifications,
+        orderNotifications,
+      });
 
       setIsSaved(true);
 

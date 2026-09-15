@@ -16,7 +16,7 @@ import { useCartQuery, useDeleteCartItemMutation } from "@/entities/cart";
 import { useCreateOrderMutation } from "@/entities/order";
 import type { OrderDeliveryMethod, OrderPaymentMethod } from "@/entities/order";
 import { useProductsQuery } from "@/entities/product";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 import { Loader } from "@/shared/ui/Loader";
 
@@ -26,7 +26,7 @@ import { getPublicImageUrl } from "@/shared/lib";
 export const CheckoutPage = () => {
   const navigate = useNavigate();
 
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: cart = [], isLoading: isCartLoading } = useCartQuery();
 

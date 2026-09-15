@@ -1,5 +1,5 @@
 import { Image, Layers, X } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 import {
   useCategoriesQuery,
@@ -28,24 +28,14 @@ export const AdminCategoryFormModal = ({
 
   const updateCategory = useUpdateCategoryMutation();
 
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [image, setImage] = useState("");
-  const [parentId, setParentId] = useState("");
+  const [name, setName] = useState(category?.name ?? "");
+  const [slug, setSlug] = useState(category?.slug ?? "");
+  const [image, setImage] = useState(category?.image ?? "");
+  const [parentId, setParentId] = useState(
+    category?.parentId ? String(category.parentId) : "",
+  );
 
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!category) {
-      return;
-    }
-
-    setName(category.name);
-    setSlug(category.slug);
-    setImage(category.image ?? "");
-
-    setParentId(category.parentId ? String(category.parentId) : "");
-  }, [category]);
 
   const handleNameChange = (value: string) => {
     setName(value);

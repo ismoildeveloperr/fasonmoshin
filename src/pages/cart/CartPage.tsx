@@ -19,7 +19,7 @@ import { useProductsQuery } from "@/entities/product";
 
 import type { Product } from "@/entities/product";
 
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -37,7 +37,7 @@ const formatPrice = (value: number) =>
   new Intl.NumberFormat("ru-RU").format(value);
 
 export const CartPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const {
     data: cart = [],

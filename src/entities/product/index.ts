@@ -1,7 +1,9 @@
-export { createProduct } from "./api/createProduct";
-export { deleteProduct } from "./api/deleteProduct";
-export { getProducts } from "./api/getProducts";
-export { updateProduct } from "./api/updateProduct";
+export {
+  createProduct,
+  deleteProduct,
+  getProducts,
+  updateProduct,
+} from "./api/productsSupabaseApi";
 
 export {
   PRODUCT_QUERY_KEYS,

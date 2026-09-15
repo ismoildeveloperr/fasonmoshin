@@ -11,14 +11,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAddressesQuery } from "@/entities/address";
 import { useFavoritesQuery } from "@/entities/favorite";
 import { useOrdersQuery } from "@/entities/order";
-import { getAuthUser, removeAuthUser } from "@/features/auth";
+import { logout, useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 import styles from "./ProfileSidebar.module.scss";
 
 export const ProfileSidebar = () => {
   const navigate = useNavigate();
 
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: favorites = [] } = useFavoritesQuery();
 
@@ -44,10 +44,13 @@ export const ProfileSidebar = () => {
     (address) => String(address.userId) === String(currentUser.id),
   ).length;
 
-  const handleLogout = () => {
-    removeAuthUser();
-
-    navigate(ROUTES.home);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(ROUTES.home);
+    } catch {
+      navigate(ROUTES.home);
+    }
   };
 
   const getLinkClassName = ({ isActive }: { isActive: boolean }) =>

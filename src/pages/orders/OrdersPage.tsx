@@ -2,7 +2,7 @@ import { ArrowRight, CalendarDays, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useOrdersQuery } from "@/entities/order";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 import { Loader } from "@/shared/ui/Loader";
 import { ProfileLayout } from "@/widgets/ProfileLayout";
@@ -18,7 +18,7 @@ const ORDER_STATUS_LABELS = {
 } as const;
 
 export const OrdersPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: orders = [], isLoading, isError } = useOrdersQuery();
 

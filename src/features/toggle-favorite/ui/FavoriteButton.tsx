@@ -6,7 +6,7 @@ import {
   useDeleteFavoriteMutation,
   useFavoritesQuery,
 } from "@/entities/favorite";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 
 type FavoriteButtonProps = {
@@ -20,7 +20,7 @@ export const FavoriteButton = ({
 }: FavoriteButtonProps) => {
   const navigate = useNavigate();
 
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: favorites = [] } = useFavoritesQuery();
 

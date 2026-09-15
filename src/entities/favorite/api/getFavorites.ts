@@ -1,9 +1,20 @@
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { getCurrentUserId, supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 import type { Favorite } from "../model/types";
 
 export const getFavorites = async (): Promise<Favorite[]> => {
-  const { data } = await apiClient.get<Favorite[]>(API_ENDPOINTS.favorites);
+  const userId = await getCurrentUserId();
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("*")
+    .eq("user_id", userId)
+    .order("id");
 
-  return data;
+  throwSupabaseError(error);
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    productId: row.product_id,
+  }));
 };

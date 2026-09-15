@@ -21,6 +21,8 @@ import { AdminCategoriesPage } from "@/pages/admin/categories/AdminCategoriesPag
 import { AdminBrandsPage } from "@/pages/admin/brands";
 import { AdminOrdersPage } from "@/pages/admin/orders";
 import { AdminUsersPage } from "@/pages/admin/users";
+import { AdminRoute } from "./AdminRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const AppRouter = () => {
   return (
@@ -28,25 +30,30 @@ export const AppRouter = () => {
       <Route path={ROUTES.home} element={<HomePage />} />
       <Route path={ROUTES.catalog} element={<CatalogPage />} />
       <Route path={ROUTES.product} element={<ProductPage />} />
-      <Route path={ROUTES.cart} element={<CartPage />} />
-      <Route path={ROUTES.favorites} element={<FavoritesPage />} />
-      <Route path={ROUTES.profile} element={<ProfilePage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path={ROUTES.cart} element={<CartPage />} />
+        <Route path={ROUTES.favorites} element={<FavoritesPage />} />
+        <Route path={ROUTES.profile} element={<ProfilePage />} />
+        <Route path={ROUTES.orders} element={<OrdersPage />} />
+        <Route path={ROUTES.addresses} element={<AddressesPage />} />
+        <Route path={ROUTES.settings} element={<SettingsPage />} />
+        <Route path={ROUTES.checkout} element={<CheckoutPage />} />
+      </Route>
       <Route path={ROUTES.delivery} element={<DeliveryPage />} />
       <Route path={ROUTES.contacts} element={<ContactsPage />} />
       <Route path={ROUTES.login} element={<LoginPage />} />
       <Route path={ROUTES.register} element={<RegisterPage />} />
-      <Route path={ROUTES.profile} element={<ProfilePage />} />
-      <Route path={ROUTES.orders} element={<OrdersPage />} />
-      <Route path={ROUTES.favorites} element={<FavoritesPage />} />
-      <Route path={ROUTES.addresses} element={<AddressesPage />} />
-      <Route path={ROUTES.settings} element={<SettingsPage />} />
-      <Route path={ROUTES.checkout} element={<CheckoutPage />} />
-      <Route path={ROUTES.admin} element={<AdminDashboardPage />} />
-      <Route path={ROUTES.adminProducts} element={<AdminProductsPage />} />
-      <Route path={ROUTES.adminCategories} element={<AdminCategoriesPage />} />
-      <Route path={ROUTES.adminBrands} element={<AdminBrandsPage />} />
-      <Route path={ROUTES.adminOrders} element={<AdminOrdersPage />} />
-      <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
+      <Route element={<AdminRoute />}>
+        <Route path={ROUTES.admin} element={<AdminDashboardPage />} />
+        <Route path={ROUTES.adminProducts} element={<AdminProductsPage />} />
+        <Route
+          path={ROUTES.adminCategories}
+          element={<AdminCategoriesPage />}
+        />
+        <Route path={ROUTES.adminBrands} element={<AdminBrandsPage />} />
+        <Route path={ROUTES.adminOrders} element={<AdminOrdersPage />} />
+        <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
+      </Route>
     </Routes>
   );
 };

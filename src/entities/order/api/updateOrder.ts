@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 import type { Order, UpdateOrderPayload } from "../model/types";
 
@@ -6,10 +6,34 @@ export const updateOrder = async ({
   id,
   data: payload,
 }: UpdateOrderPayload): Promise<Order> => {
-  const { data } = await apiClient.patch<Order>(
-    `${API_ENDPOINTS.orders}/${id}`,
-    payload,
-  );
+  const { data, error } = await supabase
+    .from("orders")
+    .update({
+      ...(payload.status !== undefined ? { status: payload.status } : {}),
+      ...(payload.comment !== undefined ? { comment: payload.comment } : {}),
+    })
+    .eq("id", id)
+    .select("*")
+    .single();
 
-  return data;
+  throwSupabaseError(error);
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    products: data.products,
+    customerName: data.customer_name,
+    phone: data.phone,
+    email: data.email,
+    deliveryMethod: data.delivery_method,
+    paymentMethod: data.payment_method,
+    address: data.address ?? undefined,
+    comment: data.comment ?? undefined,
+    productsPrice: data.products_price,
+    deliveryPrice: data.delivery_price,
+    discount: data.discount,
+    total: data.total,
+    status: data.status,
+    createdAt: data.created_at,
+  };
 };

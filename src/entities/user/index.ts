@@ -1,6 +1,4 @@
-export { createUser } from "./api/createUser";
 export { deleteUser } from "./api/deleteUser";
-export { getUserByEmail } from "./api/getUserByEmail";
 export { getUsers } from "./api/getUsers";
 export { updateUser } from "./api/updateUser";
 
@@ -12,7 +10,6 @@ export {
 } from "./model/queries";
 
 export type {
-  CreateUserPayload,
   UpdateUserPayload,
   User,
   UserRole,

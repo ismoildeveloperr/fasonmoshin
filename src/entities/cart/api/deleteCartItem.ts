@@ -1,5 +1,7 @@
-import { API_ENDPOINTS, apiClient } from "@/shared/api";
+import { supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 export const deleteCartItem = async (id: string | number): Promise<void> => {
-  await apiClient.delete(`${API_ENDPOINTS.cart}/${id}`);
+  const { error } = await supabase.from("cart_items").delete().eq("id", id);
+
+  throwSupabaseError(error);
 };

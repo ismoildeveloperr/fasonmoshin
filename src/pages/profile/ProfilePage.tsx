@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { useAddressesQuery } from "@/entities/address";
 import { useFavoritesQuery } from "@/entities/favorite";
 import { useOrdersQuery } from "@/entities/order";
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 import { ProfileLayout } from "@/widgets/ProfileLayout";
 
@@ -25,7 +25,7 @@ const ORDER_STATUS_LABELS = {
 } as const;
 
 export const ProfilePage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const { data: favorites = [] } = useFavoritesQuery();
 

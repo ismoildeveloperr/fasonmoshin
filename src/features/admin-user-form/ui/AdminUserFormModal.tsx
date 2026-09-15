@@ -1,5 +1,5 @@
 import { Mail, Phone, ShieldCheck, UserRound, X } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 import { useUpdateUserMutation } from "@/entities/user";
 
@@ -27,13 +27,6 @@ export const AdminUserFormModal = ({
   const [role, setRole] = useState<UserRole>(user.role);
 
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setName(user.name);
-    setEmail(user.email);
-    setPhone(user.phone);
-    setRole(user.role);
-  }, [user]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

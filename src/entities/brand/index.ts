@@ -1,7 +1,9 @@
-export { createBrand } from "./api/createBrand";
-export { deleteBrand } from "./api/deleteBrand";
-export { getBrands } from "./api/getBrands";
-export { updateBrand } from "./api/updateBrand";
+export {
+  createBrand,
+  deleteBrand,
+  getBrands,
+  updateBrand,
+} from "./api/brandsSupabaseApi";
 
 export {
   BRAND_QUERY_KEYS,

@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
+import { Loader } from "@/shared/ui/Loader";
 import { ProfileSidebar } from "@/widgets/ProfileSidebar";
 
 import styles from "./ProfileLayout.module.scss";
@@ -18,7 +19,11 @@ export const ProfileLayout = ({
   description,
   children,
 }: ProfileLayoutProps) => {
-  const currentUser = getAuthUser();
+  const { user: currentUser, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loader text="Проверяем авторизацию..." />;
+  }
 
   if (!currentUser) {
     return <Navigate to={ROUTES.login} replace />;

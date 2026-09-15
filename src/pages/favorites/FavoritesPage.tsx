@@ -6,7 +6,7 @@ import { useFavoritesQuery } from "@/entities/favorite";
 
 import { ProductCard, useProductsQuery } from "@/entities/product";
 
-import { getAuthUser } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 
 import { ROUTES } from "@/shared/constants/routes";
 
@@ -15,7 +15,7 @@ import { ProfileLayout } from "@/widgets/ProfileLayout";
 import styles from "./FavoritesPage.module.scss";
 
 export const FavoritesPage = () => {
-  const currentUser = getAuthUser();
+  const { user: currentUser } = useAuth();
 
   const {
     data: favorites = [],

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { createBrand } from "../api/createBrand";
-import { deleteBrand } from "../api/deleteBrand";
-import { getBrands } from "../api/getBrands";
-import { updateBrand } from "../api/updateBrand";
+import {
+  createBrand,
+  deleteBrand,
+  getBrands,
+  updateBrand,
+} from "@/entities/brand";
 
 export const BRAND_QUERY_KEYS = {
   all: ["brands"] as const,

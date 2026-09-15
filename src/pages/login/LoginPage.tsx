@@ -4,16 +4,21 @@ import { useState, type FormEvent } from "react";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
-import { getAuthUser, login, saveAuthUser } from "@/features/auth";
+import { login, useAuth } from "@/features/auth";
 
 import { ROUTES } from "@/shared/constants/routes";
+
+import { Loader } from "@/shared/ui/Loader";
 
 import styles from "./LoginPage.module.scss";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
 
+  const { user, isLoading: isAuthLoading } = useAuth();
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -22,46 +27,45 @@ export const LoginPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const currentUser = getAuthUser();
+  if (isAuthLoading) {
+    return <Loader text="Проверяем авторизацию..." />;
+  }
 
-  /**
-   * Если пользователь уже авторизован,
-   * отправляем его на страницу по роли.
-   */
-  if (currentUser) {
+  if (user) {
     return (
       <Navigate
-        to={currentUser.role === "admin" ? ROUTES.admin : ROUTES.profile}
+        to={user.role === "admin" ? ROUTES.admin : ROUTES.profile}
         replace
       />
     );
   }
 
-  /**
-   * Авторизация пользователя.
-   */
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setError("");
+
+    if (!email.trim()) {
+      setError("Введите email");
+
+      return;
+    }
+
+    if (!password) {
+      setError("Введите пароль");
+
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const user = await login({
-        email: email.trim(),
+      const loggedUser = await login({
+        email,
         password,
       });
 
-      /**
-       * Сохраняем авторизованного пользователя.
-       */
-      saveAuthUser(user);
-
-      /**
-       * Администратор сразу переходит
-       * в админ-панель.
-       */
-      if (user.role === "admin") {
+      if (loggedUser.role === "admin") {
         navigate(ROUTES.admin, {
           replace: true,
         });
@@ -69,10 +73,6 @@ export const LoginPage = () => {
         return;
       }
 
-      /**
-       * Обычный пользователь переходит
-       * в личный кабинет.
-       */
       navigate(ROUTES.profile, {
         replace: true,
       });
@@ -90,7 +90,6 @@ export const LoginPage = () => {
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
-        {/* Левая визуальная часть */}
         <section className={styles.visual}>
           <div>
             <span>FASONMOSHIN</span>
@@ -110,7 +109,6 @@ export const LoginPage = () => {
           <strong>ЕЗДИ СТИЛЬНО.</strong>
         </section>
 
-        {/* Форма авторизации */}
         <section className={styles.content}>
           <div className={styles.formContainer}>
             <span className={styles.eyebrow}>ЛИЧНЫЙ КАБИНЕТ</span>
@@ -120,7 +118,6 @@ export const LoginPage = () => {
             <p className={styles.subtitle}>Введите данные вашего аккаунта.</p>
 
             <form className={styles.form} onSubmit={handleSubmit}>
-              {/* Email */}
               <label>
                 <span>Email</span>
 
@@ -138,7 +135,6 @@ export const LoginPage = () => {
                 </div>
               </label>
 
-              {/* Password */}
               <label>
                 <span>Пароль</span>
 
@@ -166,10 +162,8 @@ export const LoginPage = () => {
                 </div>
               </label>
 
-              {/* Error */}
               {error && <div className={styles.error}>{error}</div>}
 
-              {/* Submit */}
               <button
                 type="submit"
                 className={styles.submit}
