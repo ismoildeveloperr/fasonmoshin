@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Navigate, NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 
 import {
   Boxes,
@@ -64,6 +64,7 @@ export const AdminLayout = ({
   description,
 }: AdminLayoutProps) => {
   const { user: currentUser, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <Loader text="Проверяем авторизацию..." />;
@@ -80,8 +81,10 @@ export const AdminLayout = ({
   const handleLogout = async () => {
     try {
       await logout();
+    } catch (error) {
+      console.error(error);
     } finally {
-      window.location.href = ROUTES.login;
+      navigate(ROUTES.login, { replace: true });
     }
   };
 
