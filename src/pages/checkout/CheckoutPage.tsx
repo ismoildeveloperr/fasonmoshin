@@ -11,11 +11,12 @@ import {
 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useCartQuery } from "@/entities/cart";
 import { useCreateOrderMutation } from "@/entities/order";
 import type { OrderDeliveryMethod, OrderPaymentMethod } from "@/entities/order";
-import { useProductsQuery } from "@/entities/product";
+import { PRODUCT_QUERY_KEYS, useProductsQuery } from "@/entities/product";
 import { useAuth } from "@/features/auth";
 import { ROUTES } from "@/shared/constants/routes";
 import { Loader } from "@/shared/ui/Loader";
@@ -25,6 +26,7 @@ import { getPublicImageUrl } from "@/shared/lib";
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { user: currentUser } = useAuth();
 
@@ -180,6 +182,10 @@ export const CheckoutPage = () => {
         status: "new",
 
         createdAt: new Date().toISOString(),
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: PRODUCT_QUERY_KEYS.all,
       });
 
       navigate(ROUTES.orders);
