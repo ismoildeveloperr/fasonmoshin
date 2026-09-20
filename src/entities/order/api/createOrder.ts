@@ -6,8 +6,6 @@ export const createOrder = async (
   payload: CreateOrderPayload,
 ): Promise<Order> => {
   const { data, error } = await supabase.rpc("create_order", {
-    p_user_id: payload.userId,
-
     p_products: payload.products.map((product) => ({
       product_id: product.productId,
       quantity: product.quantity,
@@ -26,17 +24,30 @@ export const createOrder = async (
     p_address: payload.address ?? null,
 
     p_comment: payload.comment ?? null,
-
-    p_products_price: payload.productsPrice,
-
-    p_delivery_price: payload.deliveryPrice,
-
-    p_discount: payload.discount,
-
-    p_total: payload.total,
   });
 
   throwSupabaseError(error);
 
-  return data;
+  if (!data) {
+    throw new Error("Supabase не вернул созданный заказ");
+  }
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    products: data.products,
+    customerName: data.customer_name,
+    phone: data.phone,
+    email: data.email,
+    deliveryMethod: data.delivery_method,
+    paymentMethod: data.payment_method,
+    address: data.address ?? undefined,
+    comment: data.comment ?? undefined,
+    productsPrice: data.products_price,
+    deliveryPrice: data.delivery_price,
+    discount: data.discount,
+    total: data.total,
+    status: data.status,
+    createdAt: data.created_at,
+  };
 };
