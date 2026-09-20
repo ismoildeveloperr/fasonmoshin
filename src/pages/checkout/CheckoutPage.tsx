@@ -12,7 +12,7 @@ import {
 import { useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
-import { useCartQuery, useDeleteCartItemMutation } from "@/entities/cart";
+import { useCartQuery } from "@/entities/cart";
 import { useCreateOrderMutation } from "@/entities/order";
 import type { OrderDeliveryMethod, OrderPaymentMethod } from "@/entities/order";
 import { useProductsQuery } from "@/entities/product";
@@ -34,8 +34,6 @@ export const CheckoutPage = () => {
     useProductsQuery();
 
   const createOrder = useCreateOrderMutation();
-
-  const deleteCartItem = useDeleteCartItemMutation();
 
   const [name, setName] = useState(currentUser?.name ?? "");
 
@@ -122,6 +120,10 @@ export const CheckoutPage = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (createOrder.isPending) {
+      return;
+    }
+
     setError("");
 
     if (!name.trim() || !phone.trim() || !email.trim()) {
@@ -180,13 +182,14 @@ export const CheckoutPage = () => {
         createdAt: new Date().toISOString(),
       });
 
-      await Promise.all(
-        userCart.map((item) => deleteCartItem.mutateAsync(item.id)),
-      );
-
       navigate(ROUTES.orders);
-    } catch {
-      setError("Не удалось оформить заказ. Попробуйте ещё раз.");
+    } catch (submitError) {
+      console.error("ORDER SUBMIT ERROR:", submitError);
+      setError(
+        submitError instanceof Error && submitError.message
+          ? submitError.message
+          : "Не удалось оформить заказ. Попробуйте ещё раз.",
+      );
     }
   };
 
@@ -514,7 +517,7 @@ export const CheckoutPage = () => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={createOrder.isPending || deleteCartItem.isPending}
+              disabled={createOrder.isPending}
             >
               {createOrder.isPending ? "Оформляем..." : "Подтвердить заказ"}
             </button>

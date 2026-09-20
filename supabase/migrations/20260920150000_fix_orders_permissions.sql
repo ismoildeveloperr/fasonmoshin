@@ -138,6 +138,14 @@ begin
   )
   returning * into created_order;
 
+  delete from public.cart_items
+  where user_id = current_user_id
+    and product_id in (
+      select item.product_id
+      from jsonb_to_recordset(coalesce(p_products, '[]'::jsonb))
+        as item(product_id bigint, quantity integer)
+    );
+
   return created_order;
 end;
 $$;
