@@ -1,27 +1,12 @@
-import {
-  getCurrentUserId,
-  supabase,
-  throwSupabaseError,
-} from "@/shared/api/supabase";
+import { supabase, throwSupabaseError } from "@/shared/api/supabase";
 
 import type { Order } from "../model/types";
 
 export const getOrders = async (): Promise<Order[]> => {
-  const userId = await getCurrentUserId();
-  const { data: isAdmin, error: roleError } = await supabase.rpc("is_admin");
-
-  throwSupabaseError(roleError);
-
-  let query = supabase
+  const { data, error } = await supabase
     .from("orders")
     .select("*")
     .order("created_at", { ascending: false });
-
-  if (!isAdmin) {
-    query = query.eq("user_id", userId);
-  }
-
-  const { data, error } = await query;
 
   throwSupabaseError(error);
 
