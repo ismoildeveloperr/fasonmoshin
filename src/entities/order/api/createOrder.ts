@@ -6,6 +6,8 @@ export const createOrder = async (
   payload: CreateOrderPayload,
 ): Promise<Order> => {
   const { data, error } = await supabase.rpc("create_order", {
+    p_user_id: payload.userId,
+
     p_products: payload.products.map((product) => ({
       product_id: product.productId,
       quantity: product.quantity,
@@ -24,42 +26,17 @@ export const createOrder = async (
     p_address: payload.address ?? null,
 
     p_comment: payload.comment ?? null,
+
+    p_products_price: payload.productsPrice,
+
+    p_delivery_price: payload.deliveryPrice,
+
+    p_discount: payload.discount,
+
+    p_total: payload.total,
   });
 
   throwSupabaseError(error);
 
-  const order = Array.isArray(data) ? data[0] : data;
-
-  return {
-    id: order.id,
-    userId: order.user_id,
-
-    products: order.products,
-
-    customerName: order.customer_name,
-
-    phone: order.phone,
-
-    email: order.email,
-
-    deliveryMethod: order.delivery_method,
-
-    paymentMethod: order.payment_method,
-
-    address: order.address ?? undefined,
-
-    comment: order.comment ?? undefined,
-
-    productsPrice: order.products_price,
-
-    deliveryPrice: order.delivery_price,
-
-    discount: order.discount,
-
-    total: order.total,
-
-    status: order.status,
-
-    createdAt: order.created_at,
-  };
+  return data;
 };
