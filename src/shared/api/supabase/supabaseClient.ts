@@ -23,3 +23,43 @@ export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
     flowType: "pkce",
   },
 });
+
+/**
+ * Получение текущего пользователя Supabase Auth
+ */
+export const getCurrentUser = async () => {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!user) {
+    throw new Error("Пользователь не авторизован");
+  }
+
+  return user;
+};
+
+/**
+ * Получение UUID текущего пользователя
+ */
+export const getCurrentUserId = async (): Promise<string> => {
+  const user = await getCurrentUser();
+
+  return user.id;
+};
+
+/**
+ * Проверка ошибок Supabase
+ */
+export const throwSupabaseError = (error: unknown) => {
+  if (error) {
+    console.error("SUPABASE ERROR:", error);
+
+    throw error;
+  }
+};
